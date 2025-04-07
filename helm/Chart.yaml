@@ -1,0 +1,9 @@
+apiVersion: v2
+name: openshift-oauth-apiserver
+description: A Helm chart for deploying Openshift OAuth API Server on Kubernetes
+type: application
+version: 0.1.0
+appVersion: "4.13.0"
+kubeVersion: ">=1.28.0-0"
+maintainers:
+  - name: suvarineko suvarineko@gmail.com

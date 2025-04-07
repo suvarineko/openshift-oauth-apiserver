@@ -1,0 +1,17 @@
+{{ if .Values.tls.etcdIssuer }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: etcd-client-tls
+  namespace: {{ .Release.Namespace }}
+spec:
+  commonName: openshift-oauth-apiserver-etcd-client
+  issuerRef:
+    group: cert-manager.io
+    kind: ClusterIssuer
+    name: {{ .Values.tls.etcdIssuer }}
+  secretName: etcd-client
+  usages:
+    - client auth
+    - server auth
+{{ end }}

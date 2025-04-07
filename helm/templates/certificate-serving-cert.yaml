@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: openshift-oauth-apiserver-tls
+  namespace: {{ .Release.Namespace }}
+spec:
+  dnsNames:
+    - api.{{ .Release.Namespace }}.svc
+    - api.{{ .Release.Namespace }}.svc.cluster.local
+  issuerRef:
+    group: cert-manager.io
+    kind: ClusterIssuer
+    name: {{ .Values.tls.clusterIssuer }}
+  secretName: serving-cert
+  usages:
+    - digital signature
+    - key encipherment
+    - client auth

@@ -1,0 +1,106 @@
+clusterDomain: ""
+
+replicaCount: 2
+
+image:
+  repository: "registry.apps.k8s.ose-prod.solution.sbt/openshift-release-dev/ocp-v4.0-art-dev"
+  pullPolicy: IfNotPresent
+  tag: "4.13.56-x86_64-oauth-apiserver"
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+
+service:
+  type: ClusterIP
+  port: 443
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 250Mi
+  requests:
+    cpu: 150m
+    memory: 200Mi
+
+nodeSelector:
+  node-role.kubernetes.io/master: ''
+
+tolerations:
+  - operator: Exists
+  - key: node.kubernetes.io/not-ready
+    operator: Exists
+    effect: NoExecute
+  - key: node.kubernetes.io/unreachable
+    operator: Exists
+    effect: NoExecute
+  - key: node.kubernetes.io/disk-pressure
+    operator: Exists
+    effect: NoSchedule
+  - key: node.kubernetes.io/memory-pressure
+    operator: Exists
+    effect: NoSchedule
+  - key: node.kubernetes.io/pid-pressure
+    operator: Exists
+    effect: NoSchedule
+  - key: node.kubernetes.io/unschedulable
+    operator: Exists
+    effect: NoSchedule
+
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            apiserver: 'true'
+            app: openshift-oauth-apiserver
+            oauth-apiserver-anti-affinity: 'true'
+        topologyKey: kubernetes.io/hostname
+
+tls:
+  etcdIssuer: ""
+  clusterIssuer: ""
+
+# OAuth API Server configuration
+config:
+  # API Server settings
+  apiServer:
+    corsAllowedOrigins:
+      - "//127\\.0\\.0\\.1(:|$)"
+      - "//localhost(:|$)"
+    auditConfig:
+      enabled: true
+      logFormat: json
+      logLevel: Normal
+      path: /var/log/oauth-apiserver/audit.log
+    
+  # Auth settings
+  auth:
+    requestTimeout: 5m
+    
+  # TLS configuration
+  tls:
+    certFile: "/etc/kubernetes/oauth-apiserver/tls/tls.crt"
+    keyFile: "/etc/kubernetes/oauth-apiserver/tls/tls.key"

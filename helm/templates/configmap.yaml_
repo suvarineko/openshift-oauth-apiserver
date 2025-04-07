@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "oauth-apiserver.fullname" . }}-config
+  labels:
+    {{- include "oauth-apiserver.labels" . | nindent 4 }}
+data:
+  oauth-apiserver-config.yaml: |
+    apiVersion: apiserver.config.k8s.io/v1
+    kind: ApiServerConfig
+    apiServer:
+      corsAllowedOrigins:
+      {{- range .Values.config.apiServer.corsAllowedOrigins }}
+        - {{ . | quote }}
+      {{- end }}
+      auditConfig:
+        enabled: {{ .Values.config.apiServer.auditConfig.enabled }}
+        logFormat: {{ .Values.config.apiServer.auditConfig.logFormat }}
+        logLevel: {{ .Values.config.apiServer.auditConfig.logLevel }}
+        path: {{ .Values.config.apiServer.auditConfig.path }}
+      
+    authentication:
+      requestTimeout: {{ .Values.config.auth.requestTimeout }}
+    
+    tlsConfig:
+      certFile: {{ .Values.config.tls.certFile }}
+      keyFile: {{ .Values.config.tls.keyFile }}
