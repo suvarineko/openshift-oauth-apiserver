@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  name: oauth-apiserver
+  namespace: {{ .Release.Namespace}}
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: oauth-apiserver.apps.k8s.r4c-test.solution.sbt
+    http:
+      paths:
+      - backend:
+          service:
+            name: api
+            port:
+              name: https
+        path: /
+        pathType: ImplementationSpecific

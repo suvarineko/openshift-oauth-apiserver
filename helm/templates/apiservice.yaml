@@ -3,7 +3,7 @@ apiVersion: apiregistration.k8s.io/v1
 metadata:
   name: v1.oauth.openshift.io
   annotations:
-    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/etcd-client-tls
+    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/openshift-oauth-apiserver-tls
 spec:
   service:
     namespace: {{ .Release.Namespace }}
@@ -14,3 +14,21 @@ spec:
   caBundle: ""
   groupPriorityMinimum: 9900
   versionPriority: 15
+---
+kind: APIService
+apiVersion: apiregistration.k8s.io/v1
+metadata:
+  name: v1.user.openshift.io
+  annotations:
+    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/openshift-oauth-apiserver-tls
+spec:
+  service:
+    namespace: {{ .Release.Namespace }}
+    name: api
+    port: 443
+  group: user.openshift.io
+  version: v1
+  caBundle: ""
+  groupPriorityMinimum: 9900
+  versionPriority: 15
+---
